@@ -5376,6 +5376,7 @@ LGraphNode.prototype.executeAction = function(action)
         this.allow_searchbox = true;
         this.allow_reconnect_links = true; //allows to change a connection with having to redo it again
 		this.align_to_grid = false; //snap to grid
+        this.RED_remap_canvas_drag_to_rmb = true; //remaps canvas drag interaction from lmb to rmb
 
         this.drag_mode = false;
         this.dragging_rectangle = null;
@@ -5482,6 +5483,7 @@ LGraphNode.prototype.executeAction = function(action)
         this.highlighted_links = {};
 
 		this.dragging_canvas = false;
+		this.RED_dragging = false;
 
         this.dirty_canvas = true;
         this.dirty_bgcanvas = true;
@@ -6283,7 +6285,7 @@ LGraphNode.prototype.executeAction = function(action)
 				}
             }
 
-            if (!skip_action && clicking_canvas_bg && this.allow_dragcanvas) {
+            if (!skip_action && clicking_canvas_bg && this.allow_dragcanvas && !this.RED_remap_canvas_drag_to_rmb) {
             	//console.log("pointerevents: dragging_canvas start");
             	this.dragging_canvas = true;
             }
@@ -6358,6 +6360,7 @@ LGraphNode.prototype.executeAction = function(action)
 
         	
         } else if (e.which == 3 || this.pointer_is_double) {
+            var clicking_canvas_bg = false;
 			
             //right button
 			if (this.allow_interaction && !skip_action && !this.read_only){
@@ -6374,10 +6377,18 @@ LGraphNode.prototype.executeAction = function(action)
 						this.selectNodes([node]);
 					}
 				}
+                else{
+                    clicking_canvas_bg = true
+                }
 				
 				// show menu on this node
-				this.processContextMenu(node, e);
+				// this.processContextMenu(node, e);
 			}
+
+            if (!skip_action && clicking_canvas_bg && this.allow_dragcanvas && this.RED_remap_canvas_drag_to_rmb) {
+            	//console.log("pointerevents: dragging_canvas start");
+            	this.dragging_canvas = true;
+            }
 			
         }
 
@@ -6498,6 +6509,7 @@ LGraphNode.prototype.executeAction = function(action)
             this.ds.offset[1] += delta[1] / this.ds.scale;
             this.dirty_canvas = true;
             this.dirty_bgcanvas = true;
+            this.RED_dragging = true;
         } else if ((this.allow_interaction || (node && node.flags.allow_interaction)) && !this.read_only) {
             if (this.connecting_node) {
                 this.dirty_canvas = true;
@@ -6964,7 +6976,14 @@ LGraphNode.prototype.executeAction = function(action)
             //trace("right");
             this.dirty_canvas = true;
             this.dragging_canvas = false;
+
+
+            if(!this.RED_dragging){
+				this.processContextMenu(node, e);
+            }
         }
+
+        this.RED_dragging = false;
 
         /*
 		if((this.dirty_canvas || this.dirty_bgcanvas) && this.rendering_timer_id == null)
