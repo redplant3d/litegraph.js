@@ -74,11 +74,7 @@ export interface IWidget<TValue = any, TOptions = any> {
      * Called by `LGraphCanvas.processNodeWidgets`
      * https://github.com/jagenjo/litegraph.js/issues/76
      */
-    mouse?(
-        event: MouseEvent,
-        pos: Vector2,
-        node: LGraphNode
-    ): boolean;
+    mouse?(event: MouseEvent, pos: Vector2, node: LGraphNode): boolean;
     /** Called by `LGraphNode.computeSize` */
     computeSize?(width: number): [number, number];
 }
@@ -300,7 +296,7 @@ export const LiteGraph: {
      * @method getNodeTypesCategories
      * @param {String} filter only nodes with ctor.filter equal can be shown
      * @return {Array} array with all the names of the categories
-     */                           
+     */
     getNodeTypesCategories(filter: string): string[];
 
     /** debug purposes: reloads all the js scripts that matches a wildcard */
@@ -418,7 +414,7 @@ export declare class LGraph {
     /**
      * Positions every node in a more readable manner
      */
-    arrange(margin?: number,layout?: string): void;
+    arrange(margin?: number, layout?: string): void;
     /**
      * Returns the amount of time the graph has been running in milliseconds
      * @return number of milliseconds the graph has been running
@@ -536,7 +532,7 @@ export declare class LGraph {
     triggerInput(name: string, value: any): void;
     setCallback(name: string, func: (...args: any[]) => any): void;
     beforeChange(info?: LGraphNode): void;
-    afterChange(info?: LGraphNode): void;                       
+    afterChange(info?: LGraphNode): void;
     connectionChange(node: LGraphNode): void;
     /** returns if the graph is in live mode */
     isLive(): boolean;
@@ -621,7 +617,7 @@ export declare class LGraphNode {
     properties_info: any[];
 
     flags: Partial<{
-        collapsed: boolean
+        collapsed: boolean;
     }>;
 
     color: string;
@@ -1011,18 +1007,16 @@ export declare class LGraphNode {
      * @param inputIndex
      * @return selected input slot index, can differ from parameter value
      */
-    onBeforeConnectInput?(
-        inputIndex: number
-    ): number;
-    
+    onBeforeConnectInput?(inputIndex: number): number;
+
     /** a connection changed (new one or removed) (LiteGraph.INPUT or LiteGraph.OUTPUT, slot, true if connected, link_info, input_info or output_info ) */
     onConnectionsChange(
         type: number,
         slotIndex: number,
         isConnected: boolean,
         link: LLink,
-        ioSlot: (INodeOutputSlot | INodeInputSlot)
-    ): void;                           
+        ioSlot: INodeOutputSlot | INodeInputSlot
+    ): void;
 
     /**
      * if returns false, will abort the `LGraphNode.setProperty`
@@ -1031,7 +1025,11 @@ export declare class LGraphNode {
      * @param value
      * @param prevValue
      */
-    onPropertyChanged?(property: string, value: any, prevValue: any): void | boolean;
+    onPropertyChanged?(
+        property: string,
+        value: any,
+        prevValue: any
+    ): void | boolean;
 
     /** Called by `LGraphCanvas.processContextMenu` */
     getMenuOptions?(graphCanvas: LGraphCanvas): ContextMenuItem[];
@@ -1144,7 +1142,8 @@ export declare class LGraphCanvas {
     );
 
     static active_canvas: HTMLCanvasElement;
-                           
+
+    RED_remap_canvas_drag_to_rmb: boolean;
     allow_dragcanvas: boolean;
     allow_dragnodes: boolean;
     /** allow to control widgets, buttons, collapse, etc */
@@ -1223,7 +1222,9 @@ export declare class LGraphCanvas {
     /** Called by `LGraphCanvas.processMouseDown` */
     onMouse: ((event: MouseEvent) => boolean) | null;
     /** Called by `LGraphCanvas.drawFrontCanvas` and `LGraphCanvas.drawLinkTooltip` */
-    onDrawLinkTooltip: ((ctx: CanvasRenderingContext2D, link: LLink, _this: this) => void) | null;
+    onDrawLinkTooltip:
+        | ((ctx: CanvasRenderingContext2D, link: LLink, _this: this) => void)
+        | null;
     /** Called by `LGraphCanvas.selectNodes` */
     onNodeMoved: ((node: LGraphNode) => void) | null;
     /** Called by `LGraphCanvas.processNodeSelected` */
@@ -1367,7 +1368,12 @@ export declare class LGraphCanvas {
     /** draws the given node inside the canvas */
     drawNode(node: LGraphNode, ctx: CanvasRenderingContext2D): void;
     /** draws graphic for node's slot */
-    drawSlotGraphic(ctx: CanvasRenderingContext2D, pos: number[], shape: SlotShape, horizontal: boolean): void;
+    drawSlotGraphic(
+        ctx: CanvasRenderingContext2D,
+        pos: number[],
+        shape: SlotShape,
+        horizontal: boolean
+    ): void;
     /** draws the shape of the given node in the canvas */
     drawNodeShape(
         node: LGraphNode,
@@ -1481,7 +1487,11 @@ declare class ContextMenu {
     ): void;
     static isCursorOverElement(event: MouseEvent, element: HTMLElement): void;
     static closeAllContextMenus(window: Window): void;
-    constructor(values: ContextMenuItem[], options?: IContextMenuOptions, window?: Window);
+    constructor(
+        values: ContextMenuItem[],
+        options?: IContextMenuOptions,
+        window?: Window
+    );
     options: IContextMenuOptions;
     parentMenu?: ContextMenu;
     lock: boolean;
